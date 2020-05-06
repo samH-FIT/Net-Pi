@@ -1,6 +1,12 @@
 import os
-import subprocess
 import psutil
+import socket
+import subprocess
+import sys
+
+# Python v3.6.9
+# Basic network monitor for use on a local machine or local area network
+# Provides ease of access to network statistics during configuration of a home network
 
 def get_network_stats():
     stats = {}
@@ -16,7 +22,6 @@ def get_network_stats():
     # Network latency 
     net_lat = subprocess.run(['ping', '-i 3', '-c 3', 'fit.edu'],
                             stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
-
     min_val, max_val, avg = net_lat[-2].split('=')[-1].split('/')[:3]
     stats['net_lat'] = dict(
         {
@@ -37,36 +42,48 @@ def get_network_stats():
     # Open ports
     conn = psutil.net_connections()
     ports = []
+    services = []
+    ps_list = []
+    count = 0
     for i in conn:
         if i.status == 'LISTEN':
             ports.append(i.laddr[1])
-    stats['ports'] = ports    
-
+            services.append(socket.getservbyport(ports[count]))
+            count += 1
+    ps_list = [str(i) + ": " + j for i, j in zip(ports, services)]
+    stats['ports'] = ps_list
     return stats
 
-net_stats = get_network_stats()
+def main():
+    net_stats = get_network_stats()
 
-print("**Network Statistics for Local Machine**")
+    print("**Network Statistics for Local Machine**")
 
-print("Number of CPUs: ", end = "")
-print(net_stats['cpu_count'])
+    print("Number of CPUs: ", end = "")
+    print(net_stats['cpu_count'])
 
-print("CPU Load Average: ", end = "")
-print(net_stats['cpu_load'], end = "")
-print("%")
+    print("CPU Load Average: ", end = "")
+    print(net_stats['cpu_load'], end = "")
+    print("%")
 
-print("Minimum Latency: ", end = "")
-print(net_stats['net_lat']['min'])
+    print("Minimum Latency: ", end = "")
+    print(net_stats['net_lat']['min'])
 
-print("Maximum Latency: ", end = "")
-print(net_stats['net_lat']['max'])
+    print("Maximum Latency: ", end = "")
+    print(net_stats['net_lat']['max'])
 
-print("Average Latency: ", end = "")
-print(net_stats['net_lat']['avg'])
+    print("Average Latency: ", end = "")
+    print(net_stats['net_lat']['avg'])
 
-print(net_stats['memory'])
+    print(net_stats['memory'])
 
-print(net_stats['io'])
+    print(net_stats['io'])
 
-print("Open ports: ", end = "")
-print(net_stats['ports'])
+    print("Open ports: ", end = "")
+    print(net_stats['ports'])    
+    
+    sys.exit(0)
+
+if __name__ == '__main__':
+        main()
+    
