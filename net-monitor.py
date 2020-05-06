@@ -22,12 +22,12 @@ def get_network_stats():
     # Network latency 
     net_lat = subprocess.run(['ping', '-i 3', '-c 3', 'fit.edu'],
                             stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')
-    min_val, max_val, avg = net_lat[-2].split('=')[-1].split('/')[:3]
+    min_val, avg, max_val = net_lat[-2].split('=')[-1].split('/')[:3]
     stats['net_lat'] = dict(
         {
             'min': min_val.strip(),
-            'max': max_val.strip(),
             'avg': avg.strip(),
+            'max': max_val.strip(),
         }
     )
 
@@ -72,11 +72,11 @@ def main():
     print("Minimum Latency: ", end = "")
     print(net_stats['net_lat']['min'])
 
-    print("Maximum Latency: ", end = "")
-    print(net_stats['net_lat']['max'])
-
     print("Average Latency: ", end = "")
     print(net_stats['net_lat']['avg'])
+
+    print("Maximum Latency: ", end = "")
+    print(net_stats['net_lat']['max'])
 
     print(net_stats['memory'])
 
