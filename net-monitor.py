@@ -47,9 +47,12 @@ def get_network_stats():
     count = 0
     for i in conn:
         if i.status == 'LISTEN':
-            ports.append(i.laddr[1])
-            services.append(socket.getservbyport(ports[count]))
-            count += 1
+            try:
+                ports.append(i.laddr[1])
+                services.append(socket.getservbyport(ports[count]))
+                count += 1
+            except:
+                continue
     ps_list = [str(i) + ": " + j for i, j in zip(ports, services)]
     stats['ports'] = ps_list
     return stats
