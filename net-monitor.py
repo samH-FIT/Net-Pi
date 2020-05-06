@@ -1,5 +1,6 @@
 import os
 import subprocess
+import psutil
 
 def get_network_stats():
     stats = {}
@@ -24,9 +25,28 @@ def get_network_stats():
             'avg': avg.strip(),
         }
     )
+
+    # Memory
+    mem = psutil.virtual_memory()
+    stats['memory'] = mem
+    
+    # Network I/O
+    input_output = psutil.net_io_counters()
+    stats['io'] = input_output
+
+    # Open ports
+    conn = psutil.net_connections()
+    ports = []
+    for i in conn:
+        if i.status == 'LISTEN':
+            ports.append(i.laddr[1])
+    stats['ports'] = ports    
+
     return stats
 
 net_stats = get_network_stats()
+
+print("**Network Statistics for Local Machine**")
 
 print("Number of CPUs: ", end = "")
 print(net_stats['cpu_count'])
@@ -43,3 +63,10 @@ print(net_stats['net_lat']['max'])
 
 print("Average Latency: ", end = "")
 print(net_stats['net_lat']['avg'])
+
+print(net_stats['memory'])
+
+print(net_stats['io'])
+
+print("Open ports: ", end = "")
+print(net_stats['ports'])
