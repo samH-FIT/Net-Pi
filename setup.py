@@ -20,9 +20,9 @@ import sys
 # sudo python3 setup.py
 
 def check_install():
-    snort_path = 'etc/snort'
-    pi_hole_path = 'etc/pihole'
-    result = []    
+    snort_path = '/etc/snort-2.9.16'
+    pi_hole_path = '/etc/pihole'
+    result = []
     result.append(os.path.isdir(snort_path))
     result.append(os.path.isdir(pi_hole_path))
     return result
